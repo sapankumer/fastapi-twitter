@@ -1,0 +1,9 @@
+pydantic-settings
+fastapi
+uvicorn
+sqlalchemy>=2.0
+psycopg2-binary
+pydantic
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
