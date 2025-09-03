@@ -15,4 +15,5 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Example: if later you want Tweets model
-    #tweets = relationship("Tweet", back_populates="owner", cascade="all, delete-orphan")
+    tweets = relationship("Tweet", back_populates="owner", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")

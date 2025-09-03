@@ -11,6 +11,12 @@ def get_by_username(db: Session, username: str) -> User | None:
 def get_by_email(db: Session, email: str) -> User | None:
     return db.scalar(select(User).where(User.email == email))
 
+def get_all(db: Session) -> list[User]:
+    return db.scalars(select(User)).all()
+
+def get_by_id(db: Session, user_id: int) -> User | None:
+    return db.get(User, user_id)
+
 
 def create(db: Session, username: str, email: str, full_name: str, password: str, is_active: bool = True) -> User:
     u = User(username=username, email=email, full_name=full_name, hashed_password=hash_password(password),

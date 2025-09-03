@@ -26,12 +26,11 @@ class UserUpdate(BaseModel):
 # Response schema (exclude password)
 class UserResponse(UserBase):
     id: int
-    is_active: bool
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # Login request schema

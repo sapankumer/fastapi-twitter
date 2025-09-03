@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -9,10 +9,15 @@ from app.crud import user as user_crud
 from app.core.security import create_access_token, decode_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=True)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    username = decode_token(token)
+    if not username:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token")
+    return username
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse, dependencies=[])
 def register(payload: UserCreate, db: Session = Depends(get_db)):
     if user_crud.get_by_username(db, payload.username):
         raise HTTPException(status_code=400, detail="Username already taken")
@@ -22,7 +27,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     return user
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=Token, dependencies=[])
 def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # OAuth2 form fields: username, password
     user = user_crud.authenticate(db, form.username, form.password)
